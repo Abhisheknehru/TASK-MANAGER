@@ -1,0 +1,69 @@
+.priority-selector {
+    display: flex;
+    gap: 6px;
+}
+
+.priority-btn {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.priority-btn:hover {
+    border-color: var(--p-color);
+    color: var(--p-color);
+}
+
+.priority-btn.active {
+    background: var(--p-bg);
+    border-color: var(--p-color);
+    color: var(--p-color);
+}
+
+.category-selector {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.category-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.category-btn:hover {
+    border-color: var(--accent-primary);
+    background: var(--bg-tertiary);
+    transform: scale(1.1);
+}
+
+.category-btn.active {
+    border-color: var(--accent-primary);
+    background: rgba(108, 99, 255, 0.12);
+}
+
+/* DateTime input styling */
+input[type="datetime-local"] {
+    color-scheme: dark;
+}
+
+[data-theme="light"] input[type="datetime-local"] {
+    color-scheme: light;
+}

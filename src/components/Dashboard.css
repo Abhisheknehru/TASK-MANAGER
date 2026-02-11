@@ -1,0 +1,257 @@
+.dashboard h2 {
+    margin-bottom: 24px;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 20px 14px;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 6px;
+}
+
+.overdue-card {
+    border-color: var(--danger);
+}
+
+.overdue-value {
+    background: linear-gradient(135deg, var(--danger), #ff6b81) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* Progress */
+.progress-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.progress-card {
+    padding: 20px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progress-count {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.progress-bar-lg {
+    height: 12px;
+    border-radius: 6px;
+}
+
+/* Dashboard Row */
+.dashboard-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+/* Time Tracking */
+.time-section h4,
+.category-section h4 {
+    margin-bottom: 16px;
+}
+
+.time-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.time-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.time-bar-label {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    min-width: 70px;
+}
+
+.time-bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--bg-tertiary);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.time-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.6s ease;
+}
+
+.time-bar-fill.estimated {
+    background: var(--accent-gradient-cool);
+}
+
+.time-bar-fill.actual {
+    background: var(--accent-gradient);
+}
+
+.time-bar-value {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 40px;
+    text-align: right;
+}
+
+/* Category Chart */
+.category-chart-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.category-donut {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.donut-hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    background: var(--bg-card);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.donut-total {
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.donut-label {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.category-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.category-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+}
+
+.cat-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.cat-name {
+    flex: 1;
+    color: var(--text-secondary);
+}
+
+.cat-count {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Export */
+.export-section {
+    margin-top: 8px;
+}
+
+.export-section h4 {
+    margin-bottom: 12px;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .progress-section,
+    .dashboard-row {
+        grid-template-columns: 1fr;
+    }
+
+    .category-chart-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .export-buttons {
+        flex-direction: column;
+    }
+}
