@@ -1,0 +1,130 @@
+/* Install Prompt Banner */
+.install-banner {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 500;
+    background: linear-gradient(135deg, rgba(107, 99, 255, 0.95), rgba(59, 52, 180, 0.95));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-lg, 16px);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 12px 40px rgba(107, 99, 255, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    max-width: 480px;
+    width: calc(100% - 32px);
+    animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(100px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.install-banner-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.install-banner-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.install-banner-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 2px;
+}
+
+.install-banner-subtitle {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+}
+
+.install-banner-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.install-btn {
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.install-btn-primary {
+    background: #fff;
+    color: #4a44c8;
+}
+
+.install-btn-primary:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: scale(1.05);
+}
+
+.install-btn-dismiss {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.install-btn-dismiss:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* iOS manual install instructions */
+.ios-install-steps {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.ios-install-steps p {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 2px 0;
+}
+
+.ios-install-steps .step-emoji {
+    margin-right: 4px;
+}
+
+@media (max-width: 768px) {
+    .install-banner {
+        bottom: 80px;
+        flex-wrap: wrap;
+        padding: 14px 16px;
+        gap: 12px;
+    }
+
+    .install-banner-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .install-btn {
+        flex: 1;
+        text-align: center;
+    }
+}

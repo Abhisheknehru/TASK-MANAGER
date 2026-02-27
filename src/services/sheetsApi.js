@@ -2,10 +2,34 @@
 import { getAccessToken } from './googleAuth';
 
 const SHEET_NAME = 'Tasks';
-const HEADERS = ['Task ID', 'Title', 'Description', 'Category', 'Priority', 'Deadline', 'Status', 'Created Date', 'Completed Date', 'Time Spent', 'Recurring'];
+const HEADERS = ['Task ID', 'Title', 'Description', 'Category', 'Priority', 'Deadline', 'Status', 'Created Date', 'Completed Date', 'Time Spent', 'Recurring', 'Modified Date'];
 
 const getSheetId = () => localStorage.getItem('taskmanager_sheet_id');
 const setSheetId = (id) => localStorage.setItem('taskmanager_sheet_id', id ? JSON.stringify(id) : null);
+
+// Get the URL to the user's spreadsheet
+export const getSpreadsheetUrl = () => {
+    const sheetId = getSheetId();
+    if (!sheetId) return null;
+    try {
+        const id = JSON.parse(sheetId);
+        return `https://docs.google.com/spreadsheets/d/${id}`;
+    } catch {
+        return null;
+    }
+};
+
+// Test the connection by listing spreadsheets
+export const testConnection = async () => {
+    const token = getAccessToken();
+    if (!token) throw new Error('Not authenticated');
+    try {
+        await window.gapi.client.drive.files.list({ pageSize: 1, q: "mimeType='application/vnd.google-apps.spreadsheet'" });
+        return true;
+    } catch (e) {
+        throw new Error('Connection test failed: ' + (e.message || 'Unknown error'));
+    }
+};
 
 // Create a new spreadsheet
 export const createSpreadsheet = async () => {
@@ -68,11 +92,13 @@ const taskToRow = (task) => [
     task.completedDate || '',
     String(task.timeSpent || 0),
     task.recurring || 'none',
+    task.modifiedDate || task.createdDate || '',
 ];
 
 // Convert sheet row to task object
 const rowToTask = (row) => {
     if (!row || row.length < 2) return null;
+    const createdDate = row[7] || new Date().toISOString();
     return {
         id: row[0] || '',
         title: row[1] || '',
@@ -81,13 +107,13 @@ const rowToTask = (row) => {
         priority: row[4] || 'Medium',
         deadline: row[5] || null,
         status: row[6] || 'pending',
-        createdDate: row[7] || new Date().toISOString(),
+        createdDate,
         completedDate: row[8] || null,
         timeSpent: parseInt(row[9]) || 0,
         recurring: row[10] || 'none',
         timeEstimate: 0,
         tags: [],
-        modifiedDate: new Date().toISOString(),
+        modifiedDate: row[11] || createdDate,
     };
 };
 
@@ -101,7 +127,7 @@ export const fetchTasksFromSheet = async () => {
         const parsedId = JSON.parse(spreadsheetId);
         const response = await window.gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: parsedId,
-            range: `${SHEET_NAME}!A2:K`,
+            range: `${SHEET_NAME}!A2:L`,
         });
 
         const rows = response.result.values || [];
@@ -131,7 +157,7 @@ export const syncTasksToSheet = async (tasks) => {
         // Clear existing data (keep header)
         await window.gapi.client.sheets.spreadsheets.values.clear({
             spreadsheetId: parsedId,
-            range: `${SHEET_NAME}!A2:K`,
+            range: `${SHEET_NAME}!A2:L`,
         });
 
         if (tasks.length === 0) return true;
@@ -167,7 +193,7 @@ export const addTaskToSheet = async (task) => {
 
         await window.gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: parsedId,
-            range: `${SHEET_NAME}!A:K`,
+            range: `${SHEET_NAME}!A:L`,
             valueInputOption: 'RAW',
             resource: {
                 values: [taskToRow(task)],
@@ -194,7 +220,7 @@ export const exportReport = async (reportData, title) => {
         const parsedId = typeof spreadsheetId === 'string' ? JSON.parse(spreadsheetId) : spreadsheetId;
 
         // Add a new sheet for the report
-        const addSheetRes = await window.gapi.client.sheets.spreadsheets.batchUpdate({
+        await window.gapi.client.sheets.spreadsheets.batchUpdate({
             spreadsheetId: parsedId,
             requests: [{
                 addSheet: {

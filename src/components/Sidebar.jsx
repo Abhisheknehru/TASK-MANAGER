@@ -1,4 +1,5 @@
 import ThemeSwitcher from './ThemeSwitcher';
+import { getSpreadsheetUrl } from '../services/sheetsApi';
 import './Sidebar.css';
 
 const NAV_ITEMS = [
@@ -8,6 +9,8 @@ const NAV_ITEMS = [
 ];
 
 const Sidebar = ({ activeView, onViewChange, streakData, isAuthenticated, onSignIn, onSignOut, isSyncing }) => {
+    const sheetUrl = isAuthenticated ? getSpreadsheetUrl() : null;
+
     return (
         <aside className="sidebar">
             <div className="sidebar-inner">
@@ -55,6 +58,17 @@ const Sidebar = ({ activeView, onViewChange, streakData, isAuthenticated, onSign
                                 <span className={`sync-dot ${isSyncing ? 'syncing' : 'connected'}`} />
                                 <span className="sync-text">{isSyncing ? 'Syncing...' : 'Connected'}</span>
                             </div>
+                            {sheetUrl && (
+                                <a
+                                    href={sheetUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="sidebar-sheet-link"
+                                    title="Open Google Sheet"
+                                >
+                                    📊 View Sheet
+                                </a>
+                            )}
                             <button className="btn btn-ghost btn-sm" onClick={onSignOut}>Sign Out</button>
                         </div>
                     ) : (
@@ -75,3 +89,4 @@ const Sidebar = ({ activeView, onViewChange, streakData, isAuthenticated, onSign
 };
 
 export default Sidebar;
+

@@ -194,6 +194,25 @@
     flex-shrink: 0;
 }
 
+.sidebar-sheet-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent-primary, #6b63ff);
+    background: rgba(107, 99, 255, 0.08);
+    border-radius: var(--radius-sm, 8px);
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.sidebar-sheet-link:hover {
+    background: rgba(107, 99, 255, 0.15);
+    transform: translateX(2px);
+}
+
 /* Mobile Sidebar */
 @media (max-width: 768px) {
     .sidebar {

@@ -86,11 +86,11 @@ export const toInputDatetime = (date) => {
 };
 
 export const getNextOccurrence = (task) => {
-    const now = new Date();
-    const deadline = new Date(task.deadline);
     if (!task.recurring || task.recurring === 'none') return null;
+    if (!task.deadline) return null;
 
-    const next = new Date(deadline);
+    const now = new Date();
+    const next = new Date(task.deadline);
     while (next <= now) {
         if (task.recurring === 'daily') next.setDate(next.getDate() + 1);
         else if (task.recurring === 'weekly') next.setDate(next.getDate() + 7);

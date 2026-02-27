@@ -1,14 +1,34 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { getDaysInMonth, getFirstDayOfMonth, getDateKey } from '../utils/dateUtils';
 import './Calendar.css';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const Calendar = ({ streakData }) => {
+const Calendar = ({ streakData, tasks = [] }) => {
     const today = new Date();
     const [currentMonth, setCurrentMonth] = useState(today.getMonth());
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
+    const [tooltip, setTooltip] = useState(null);
+    const tooltipRef = useRef(null);
+    const calendarRef = useRef(null);
+
+    // Build a map of dateKey -> list of completed task titles
+    const completedTasksByDate = useMemo(() => {
+        const map = {};
+        tasks.forEach(task => {
+            if (task.status === 'completed' && task.completedDate) {
+                const key = getDateKey(new Date(task.completedDate));
+                if (!map[key]) map[key] = [];
+                map[key].push({
+                    title: task.title,
+                    category: task.category,
+                    priority: task.priority,
+                });
+            }
+        });
+        return map;
+    }, [tasks]);
 
     const calendarDays = useMemo(() => {
         const daysInMonth = getDaysInMonth(currentYear, currentMonth);
@@ -62,8 +82,46 @@ const Calendar = ({ streakData }) => {
         }
     };
 
+    const handleCellHover = (e, cell) => {
+        if (!cell.day) return;
+        const tasksForDay = completedTasksByDate[cell.key] || [];
+        if (tasksForDay.length === 0 && cell.count === 0) return;
+
+        const cellRect = e.currentTarget.getBoundingClientRect();
+        const calendarRect = calendarRef.current?.getBoundingClientRect();
+
+        setTooltip({
+            dateKey: cell.key,
+            day: cell.day,
+            count: cell.count,
+            tasks: tasksForDay,
+            x: cellRect.left - (calendarRect?.left || 0) + cellRect.width / 2,
+            y: cellRect.top - (calendarRect?.top || 0),
+        });
+    };
+
+    const handleCellLeave = () => {
+        setTooltip(null);
+    };
+
+    // Close tooltip on scroll
+    useEffect(() => {
+        const handleScroll = () => setTooltip(null);
+        window.addEventListener('scroll', handleScroll, true);
+        return () => window.removeEventListener('scroll', handleScroll, true);
+    }, []);
+
+    const priorityEmoji = (priority) => {
+        switch (priority) {
+            case 'High': return '🔴';
+            case 'Medium': return '🟡';
+            case 'Low': return '🟢';
+            default: return '⚪';
+        }
+    };
+
     return (
-        <div className="calendar-view animate-fade-in-up">
+        <div className="calendar-view animate-fade-in-up" ref={calendarRef}>
             <div className="calendar-header-row">
                 <h2>Activity Calendar</h2>
             </div>
@@ -85,8 +143,9 @@ const Calendar = ({ streakData }) => {
                 {calendarDays.map(cell => (
                     <div
                         key={cell.key}
-                        className={`calendar-cell ${!cell.day ? 'empty' : ''} ${cell.isToday ? 'today' : ''} heat-${getHeatLevel(cell.count)}`}
-                        title={cell.day ? `${cell.count} task${cell.count !== 1 ? 's' : ''} completed` : ''}
+                        className={`calendar-cell ${!cell.day ? 'empty' : ''} ${cell.isToday ? 'today' : ''} heat-${getHeatLevel(cell.count)} ${cell.count > 0 ? 'has-tasks' : ''}`}
+                        onMouseEnter={(e) => handleCellHover(e, cell)}
+                        onMouseLeave={handleCellLeave}
                     >
                         {cell.day && (
                             <>
@@ -97,6 +156,40 @@ const Calendar = ({ streakData }) => {
                     </div>
                 ))}
             </div>
+
+            {/* Hover Tooltip */}
+            {tooltip && (
+                <div
+                    className="calendar-tooltip animate-tooltip"
+                    ref={tooltipRef}
+                    style={{
+                        left: `${tooltip.x}px`,
+                        top: `${tooltip.y}px`,
+                    }}
+                >
+                    <div className="tooltip-header">
+                        <span className="tooltip-date">
+                            {MONTHS[currentMonth]} {tooltip.day}, {currentYear}
+                        </span>
+                        <span className="tooltip-count">
+                            {tooltip.count} task{tooltip.count !== 1 ? 's' : ''} ✅
+                        </span>
+                    </div>
+                    {tooltip.tasks.length > 0 && (
+                        <ul className="tooltip-task-list">
+                            {tooltip.tasks.slice(0, 8).map((t, i) => (
+                                <li key={i} className="tooltip-task-item">
+                                    <span className="tooltip-priority">{priorityEmoji(t.priority)}</span>
+                                    <span className="tooltip-task-title">{t.title}</span>
+                                </li>
+                            ))}
+                            {tooltip.tasks.length > 8 && (
+                                <li className="tooltip-more">+{tooltip.tasks.length - 8} more</li>
+                            )}
+                        </ul>
+                    )}
+                </div>
+            )}
 
             {/* Legend */}
             <div className="calendar-legend">

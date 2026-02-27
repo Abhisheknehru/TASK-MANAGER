@@ -48,7 +48,8 @@ const useTasks = () => {
         setTasks(prev =>
             prev.map(t => {
                 if (t.id !== id) return t;
-                const isCompleting = t.status === 'pending';
+                // Handle any non-completed status (pending, overdue, etc.)
+                const isCompleting = t.status !== 'completed';
                 const updated = {
                     ...t,
                     status: isCompleting ? 'completed' : 'pending',

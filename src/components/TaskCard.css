@@ -38,9 +38,9 @@
 }
 
 .task-check {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
     border: 2px solid var(--border-highlight);
     border-radius: 50%;
     background: transparent;
@@ -50,21 +50,73 @@
     justify-content: center;
     transition: all 0.25s ease;
     margin-top: 2px;
+    position: relative;
 }
 
 .task-check:hover {
     border-color: var(--accent-primary);
-    background: rgba(108, 99, 255, 0.1);
+    background: rgba(108, 99, 255, 0.15);
+    transform: scale(1.15);
+}
+
+.task-check .check-icon-hover {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.task-check:hover .check-icon-hover {
+    opacity: 0.5;
 }
 
 .task-check.checked {
     background: var(--accent-gradient);
     border-color: transparent;
+    animation: checkPop 0.3s ease;
+}
+
+.task-check.overdue-check {
+    border-color: var(--danger);
+    animation: overdueGlow 2s ease-in-out infinite;
+}
+
+.task-check.overdue-check:hover {
+    border-color: var(--accent-primary);
+    background: rgba(108, 99, 255, 0.15);
+    animation: none;
+}
+
+@keyframes checkPop {
+    0% {
+        transform: scale(0.8);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes overdueGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 8px 2px rgba(255, 71, 87, 0.3);
+    }
 }
 
 .check-icon {
     color: #fff;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
 }
 

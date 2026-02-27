@@ -7,6 +7,7 @@ import Calendar from './components/Calendar';
 import Dashboard from './components/Dashboard';
 import StreakBadges from './components/StreakBadges';
 import SettingsModal from './components/SettingsModal';
+import InstallPrompt from './components/InstallPrompt';
 import useTasks from './hooks/useTasks';
 import useNotifications from './hooks/useNotifications';
 import useStreak from './hooks/useStreak';
@@ -134,7 +135,7 @@ function App() {
       case 'calendar':
         return (
           <>
-            <Calendar streakData={streakData} />
+            <Calendar streakData={streakData} tasks={tasks} />
             <StreakBadges
               badges={badges}
               allBadges={allBadges}
@@ -203,6 +204,8 @@ function App() {
           settings={settings}
           onSaveSettings={handleSaveSettings}
           onClose={() => setShowSettings(false)}
+          isAuthenticated={isAuthenticated}
+          onSignOut={handleSignOut}
         />
       )}
 
@@ -235,6 +238,9 @@ function App() {
 
       {/* Offline indicator */}
       <OfflineIndicator />
+
+      {/* Install prompt */}
+      <InstallPrompt />
     </div>
   );
 }

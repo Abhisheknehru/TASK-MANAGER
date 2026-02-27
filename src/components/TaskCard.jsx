@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { CATEGORIES } from '../utils/taskUtils';
 import { formatRelativeTime, isOverdue, formatDate } from '../utils/dateUtils';
 import './TaskCard.css';
@@ -32,11 +32,16 @@ const TaskCard = ({ task, onToggleComplete, onEdit, onDelete, onUpdateTime }) =>
                 {/* Header row */}
                 <div className="task-card-header">
                     <button
-                        className={`task-check ${task.status === 'completed' ? 'checked' : ''}`}
-                        onClick={() => onToggleComplete(task.id)}
+                        className={`task-check ${task.status === 'completed' ? 'checked' : ''} ${overdue ? 'overdue-check' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); onToggleComplete(task.id); }}
                         title={task.status === 'completed' ? 'Mark pending' : 'Mark complete'}
+                        aria-label={task.status === 'completed' ? 'Mark as pending' : 'Mark as complete'}
                     >
-                        {task.status === 'completed' && <span className="check-icon">✓</span>}
+                        {task.status === 'completed' ? (
+                            <span className="check-icon">✓</span>
+                        ) : (
+                            <span className="check-icon-hover">✓</span>
+                        )}
                     </button>
 
                     <div className="task-card-info" onClick={() => onEdit(task)}>
