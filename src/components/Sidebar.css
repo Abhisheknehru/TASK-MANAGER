@@ -184,14 +184,23 @@
     color: var(--text-secondary);
 }
 
-.google-btn {
-    width: 100%;
-    gap: 10px;
-    justify-content: center;
+.sync-not-connected {
+    text-align: center;
+    padding: 8px;
 }
 
-.google-btn svg {
-    flex-shrink: 0;
+.sync-hint {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.sync-hint-sub {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
 }
 
 .sidebar-sheet-link {

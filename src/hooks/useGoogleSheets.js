@@ -1,10 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { initGoogleAuth, signIn, signOut, isSignedIn, restoreSession, getClientId } from '../services/googleAuth';
+import { isConnected, setScriptUrl, clearScriptUrl, testConnection, getSheetUrl, exportReport } from '../services/sheetsApi';
 import { runSync, setupOnlineSync } from '../services/syncEngine';
-import { exportReport } from '../services/sheetsApi';
 
 const useGoogleSheets = (tasks, bulkSetTasks) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(() => isConnected());
     const [isSyncing, setIsSyncing] = useState(false);
     const [lastSynced, setLastSynced] = useState(null);
     const [syncError, setSyncError] = useState(null);
@@ -14,28 +13,23 @@ const useGoogleSheets = (tasks, bulkSetTasks) => {
         tasksRef.current = tasks;
     }, [tasks]);
 
-    // Initialize on mount
+    // Check connection status on mount
     useEffect(() => {
-        const init = async () => {
-            if (!getClientId()) return;
-            await initGoogleAuth();
-            const restored = await restoreSession();
-            if (restored && isSignedIn()) {
-                setIsAuthenticated(true);
-            }
-        };
-        init();
+        setIsAuthenticated(isConnected());
     }, []);
 
     // Setup online sync listener
     useEffect(() => {
         setupOnlineSync(() => {
-            performSync();
+            if (isConnected()) {
+                performSync();
+            }
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const performSync = useCallback(async () => {
-        if (isSyncing) return;
+        if (isSyncing || !isConnected()) return;
         setIsSyncing(true);
         setSyncError(null);
 
@@ -52,26 +46,29 @@ const useGoogleSheets = (tasks, bulkSetTasks) => {
         }
     }, [isSyncing, bulkSetTasks]);
 
-    const handleSignIn = useCallback(async () => {
+    const handleConnect = useCallback(async (scriptUrl) => {
         try {
-            await initGoogleAuth();
-            await signIn();
+            setScriptUrl(scriptUrl);
+            const result = await testConnection();
             setIsAuthenticated(true);
-            // Auto sync after login
+            // Auto sync after connecting
             setTimeout(performSync, 500);
+            return result;
         } catch (e) {
-            setSyncError(e.message || 'Sign in failed');
+            clearScriptUrl();
+            setIsAuthenticated(false);
+            throw e;
         }
     }, [performSync]);
 
-    const handleSignOut = useCallback(() => {
-        signOut();
+    const handleDisconnect = useCallback(() => {
+        clearScriptUrl();
         setIsAuthenticated(false);
         setLastSynced(null);
     }, []);
 
     const handleExportReport = useCallback(async (period = 'weekly') => {
-        if (!isAuthenticated) return false;
+        if (!isConnected()) return false;
 
         const now = new Date();
         const title = `${period === 'weekly' ? 'Weekly' : 'Monthly'} Report - ${now.toLocaleDateString()}`;
@@ -110,15 +107,15 @@ const useGoogleSheets = (tasks, bulkSetTasks) => {
         ];
 
         return await exportReport(reportData, title);
-    }, [isAuthenticated, tasks]);
+    }, [tasks]);
 
     return {
         isAuthenticated,
         isSyncing,
         lastSynced,
         syncError,
-        handleSignIn,
-        handleSignOut,
+        handleSignIn: handleConnect,  // kept same name for compatibility
+        handleSignOut: handleDisconnect,
         performSync,
         handleExportReport,
     };

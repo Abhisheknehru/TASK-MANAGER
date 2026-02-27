@@ -205,6 +205,7 @@ function App() {
           onSaveSettings={handleSaveSettings}
           onClose={() => setShowSettings(false)}
           isAuthenticated={isAuthenticated}
+          onSignIn={handleSignIn}
           onSignOut={handleSignOut}
         />
       )}

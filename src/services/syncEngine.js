@@ -1,6 +1,5 @@
-/* Sync Engine - Manages bidirectional sync between local and Google Sheets */
-import { fetchTasksFromSheet, syncTasksToSheet } from './sheetsApi';
-import { isSignedIn } from './googleAuth';
+/* Sync Engine - Simple sync between local and Google Sheets via Apps Script */
+import { fetchTasks, syncTasks, isConnected } from './sheetsApi';
 import storage from './localStorage';
 
 // Merge local and remote tasks, latest modifiedDate wins
@@ -35,19 +34,19 @@ export const mergeTasks = (localTasks, remoteTasks) => {
 
 // Run a full sync cycle
 export const runSync = async (localTasks) => {
-    if (!isSignedIn() || !navigator.onLine) {
+    if (!isConnected() || !navigator.onLine) {
         return { tasks: localTasks, synced: false };
     }
 
     try {
         // 1. Fetch remote
-        const remoteTasks = await fetchTasksFromSheet();
+        const remoteTasks = await fetchTasks();
 
         // 2. Merge
         const merged = mergeTasks(localTasks, remoteTasks || []);
 
         // 3. Push merged back to Sheets
-        await syncTasksToSheet(merged);
+        await syncTasks(merged);
 
         // 4. Process offline queue
         const queue = storage.getSyncQueue();
